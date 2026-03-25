@@ -11,6 +11,27 @@ services:
     environment:
       - MONGO_INITDB_DATABASE=safar
 
+  safar-redis:
+    image: redis:alpine
+    container_name: safar-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+
+  safar-minio:
+    image: minio/minio:latest
+    container_name: safar-minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio-data:/data
+    environment:
+      - MINIO_ROOT_USER=safar_user
+      - MINIO_ROOT_PASSWORD=safar_password
+    command: server /data --console-address ":9001"
+
   safar-backend:
     build:
       context: .
@@ -21,11 +42,21 @@ services:
     environment:
       - PORT=4000
       - MONGO_URI=mongodb://safar-mongodb:27017/safar
+      - REDIS_URL=redis://safar-redis:6379
+      - MINIO_ENDPOINT=safar-minio
+      - MINIO_PORT=9000
+      - MINIO_ACCESS_KEY=safar_user
+      - MINIO_SECRET_KEY=safar_password
+      - MINIO_BUCKET=safar-uploads
       - NODE_ENV=production
       - CLIENT_URL=http://localhost:3000
       - ADMIN_URL=http://localhost:5173
     depends_on:
       - safar-mongodb
+      - safar-redis
+      - safar-minio
 
 volumes:
   mongo-data:
+  redis-data:
+  minio-data:
