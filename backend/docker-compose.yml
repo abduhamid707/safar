@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  safar-mongodb:
+    image: mongo:latest
+    container_name: safar-mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    environment:
+      - MONGO_INITDB_DATABASE=safar
+
+  safar-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: safar-backend
+    ports:
+      - "4000:4000"
+    environment:
+      - PORT=4000
+      - MONGO_URI=mongodb://safar-mongodb:27017/safar
+      - NODE_ENV=production
+      - CLIENT_URL=http://localhost:3000
+      - ADMIN_URL=http://localhost:5173
+    depends_on:
+      - safar-mongodb
+
+volumes:
+  mongo-data:
