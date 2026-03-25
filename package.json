@@ -1,0 +1,14 @@
+{
+  "name": "safar-monorepo",
+  "private": true,
+  "workspaces": [
+    "client",
+    "backend",
+    "admin"
+  ],
+  "scripts": {
+    "dev:client": "npm run dev --workspace=client",
+    "dev:backend": "npm run start:dev --workspace=backend",
+    "dev:admin": "npm run dev --workspace=admin"
+  }
+}
